@@ -34,6 +34,7 @@
   {
       $query = '?'.compose_solr_query_from_attrs($attrs);
       $ckanapi_url = $ckan_domain.'/api/3/action/package_search'.$query;
+      echo "<script>console.log('ckanapi_url: ".$ckanapi_url."')</script>";
       $json = wpckan_get_or_cache($ckanapi_url, $query);
 
       if ($json === false) {
@@ -65,6 +66,48 @@
       wpckan_log('wpckan_api_package_search result: '. print_r($datasets['result'], true));
 
       return $datasets['result'];
+  }
+
+  function wpckan_api_tags_search($ckan_domain, $attrs)
+  {
+      $ckanapi_url = $ckan_domain.'/api/3/action/package_search?facet.field=["tags"]';
+      if(isset($attrs['limit'])){
+        $ckanapi_url.='&facet.limit='.$attrs['limit'].'&rows=0';
+      }
+      $json = wpckan_get_or_cache($ckanapi_url, $query);
+
+      if ($json === false) {
+          return [];
+      }
+      $datasets = json_decode($json, true) ?: [];
+
+      if (!isset($datasets['result'])):
+        return [];
+      endif;
+
+      $total_count = $datasets['result']['count'];
+
+      wpckan_log('wpckan_api_package_search result: '. print_r($datasets['result'], true));
+
+      return $datasets['result'];
+  }
+
+  function wpckan_api_groups_filter($ckan_domain, $attrs) {
+    $ckanapi_url = $ckan_domain.'/api/3/action/group_list?all_fields=true&include_dataset_count=true';
+    $json = wpckan_get_or_cache($ckanapi_url, $query);
+
+    if ($json === false) {
+        return [];
+    }
+    $datasets = json_decode($json, true) ?: [];
+
+    if (!isset($datasets['result'])):
+      return [];
+    endif;
+
+    wpckan_log('wpckan_api_groups_filter: '. print_r($datasets['result'], true));
+
+    return $datasets['result'];
   }
 
   /*

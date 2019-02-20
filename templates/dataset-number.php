@@ -9,6 +9,6 @@
     $suffix = $atts["suffix"];
 ?>
 
-<div class="wpckan_dataset_number">
-  <p><a <?php if (array_key_exists("link_url",$atts)){ ?>target="_blank" href=<?php echo $atts["link_url"] ?><?php } ?>><?php echo $prefix ?><?php echo $atts['count'] ?><?php echo $suffix ?></a></p>
-</div>
+<span class="wpckan_dataset_number">
+  <?php echo $atts['count'] ?>
+</span>

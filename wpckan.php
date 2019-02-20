@@ -46,6 +46,9 @@ if (!class_exists('wpckan')) {
           add_shortcode('wpckan_number_of_related_datasets', array(&$this, 'wpckan_do_shortcode_get_number_of_related_datasets'));
           add_shortcode('wpckan_query_datasets', array(&$this, 'wpckan_do_shortcode_query_datasets'));
           add_shortcode('wpckan_number_of_query_datasets', array(&$this, 'wpckan_do_shortcode_get_number_of_query_datasets'));
+          add_shortcode('wpckan_10_tags_user', array(&$this, 'wpckan_do_shortcode_get_10_tags_used'));
+          add_shortcode('wpckan_groups_filter', array(&$this, 'wpckan_do_shortcode_get_groups_filter'));
+          add_shortcode('wpckan_groups_catalog', array(&$this, 'wpckan_do_shortcode_get_groups_catalog'));
           add_shortcode('wpckan_dataset_detail', array(&$this, 'wpckan_do_shortcode_dataset_detail'));
           add_action('admin_notices', array($this, 'check_requirements'));
           add_action('admin_notices', array($this, 'check_requirements_log'));
@@ -139,6 +142,39 @@ if (!class_exists('wpckan')) {
           $atts['post_id'] = get_the_ID();
 
           return wpckan_show_number_of_query_datasets($atts);
+        }
+
+        public function wpckan_do_shortcode_get_10_tags_used($atts)
+        {
+          wpckan_log('wpckan_do_shortcode_get_10-tags_used: '.print_r($atts, true));
+
+          if (!wpckan_validate_settings_read()) {
+            return;
+          }
+
+          return wpckan_show_10_tags_used($atts);
+        }
+
+        public function wpckan_do_shortcode_get_groups_filter($atts)
+        {
+          wpckan_log('wpckan_do_shortcode_get_groups_filter: '.print_r($atts, true));
+
+          if (!wpckan_validate_settings_read()) {
+            return;
+          }
+
+          return wpckan_show_groups_filter($atts);
+        }
+
+        public function wpckan_do_shortcode_get_groups_catalog($atts)
+        {
+          wpckan_log('wpckan_do_shortcode_get_groups_catalog: '.print_r($atts, true));
+
+          if (!wpckan_validate_settings_read()) {
+            return;
+          }
+
+          return wpckan_show_groups_catalog($atts);
         }
 
         public function wpckan_do_shortcode_dataset_detail($atts)

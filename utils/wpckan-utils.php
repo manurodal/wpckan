@@ -168,6 +168,46 @@
     return wpckan_output_template( plugin_dir_path( __FILE__ ) . '../templates/dataset-number.php',$dataset_array,$atts);
   }
 
+  function wpckan_show_10_tags_used($atts) {
+    wpckan_log("wpckan_show_10_tags_used"  . print_r($atts,true));
+
+    $dataset_array = array();
+    try{
+      $result = wpckan_api_tags_search(wpckan_get_ckan_domain(),$atts);
+      $dataset_array = $result["search_facets"]["tags"]["items"];
+    }catch(Exception $e){
+      wpckan_log($e->getMessage());
+    }
+
+    return wpckan_output_template( plugin_dir_path( __FILE__ ) . '../templates/tags_used.php',$dataset_array,$atts);
+  }
+
+  function wpckan_show_groups_filter($atts) {
+    wpckan_log("wpckan_show_groups_filter"  . print_r($atts,true));
+
+    $dataset_array = array();
+    try{
+      $result = wpckan_api_groups_filter(wpckan_get_ckan_domain(),$atts);
+    }catch(Exception $e){
+      wpckan_log($e->getMessage());
+    }
+
+    return wpckan_output_template( plugin_dir_path( __FILE__ ) . '../templates/groups_filter.php',$result,$atts);
+  }
+
+  function wpckan_show_groups_catalog($atts) {
+    wpckan_log("wpckan_show_groups_filter"  . print_r($atts,true));
+
+    $dataset_array = array();
+    try{
+      $result = wpckan_api_groups_filter(wpckan_get_ckan_domain(),$atts);
+    }catch(Exception $e){
+      wpckan_log($e->getMessage());
+    }
+
+    return wpckan_output_template( plugin_dir_path( __FILE__ ) . '../templates/groups_catalog.php',$result,$atts);
+  }
+
   function wpckan_show_dataset_detail($atts) {
 
     wpckan_log("wpckan_show_dataset_detail "  . print_r($atts,true));
@@ -333,6 +373,10 @@
     // query
     if (isset($attrs['query'])):
       $arguments .= 'q="'. urlencode($attrs['query']) . '"';
+    endif;
+    // query
+    if (isset($attrs['q'])):
+      $arguments .= 'q='. $attrs['q'];
     endif;
 
     $fq = "";

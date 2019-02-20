@@ -10,43 +10,130 @@
 	$current_language = wpckan_get_current_language();
   $dataset_id = $data['id']; ?>
 
+  <style>
+
+  .wrapper {
+      max-width:340px;
+      min-height: 50px;
+      padding-top:20px;
+  }
+
+  .tag {
+    float:left;
+    margin:0 0 7px 20px;
+    position:relative;
+
+    font-family:'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size:0.75em;
+    font-weight:bold;
+    text-decoration:none;
+
+    color:#996633;
+    text-shadow:0px 1px 0px rgba(255,255,255,.4);
+
+    padding:0.417em 0.417em 0.417em 0.917em;
+
+    border:1px solid #d99d38;
+
+    -webkit-border-radius:0.25em 0.25em 0.25em 0.25em;
+    -moz-border-radius:0.25em 0.25em 0.25em 0.25em;
+    border-radius:0.25em 0.25em 0.25em 0.25em;
+
+    background-image: -webkit-linear-gradient(top, rgb(254, 218, 113), rgb(254, 186, 71));
+    background-image: -moz-linear-gradient(top, rgb(254, 218, 113), rgb(254, 186, 71));
+    background-image: -o-linear-gradient(top, rgb(254, 218, 113), rgb(254, 186, 71));
+    background-image: -ms-linear-gradient(top, rgb(254, 218, 113), rgb(254, 186, 71));
+    background-image: linear-gradient(top, rgb(254, 218, 113), rgb(254, 186, 71));
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,StartColorStr='#feda71', EndColorStr='#feba47');
+
+    -webkit-box-shadow:
+        inset 0 1px 0 #faeaba,
+        0 1px 1px rgba(0,0,0,.1);
+    -moz-box-shadow:
+        inset 0 1px 0 #faeaba,
+        0 1px 1px rgba(0,0,0,.1);
+    box-shadow:
+        inset 0 1px 0 #faeaba,
+        0 1px 1px rgba(0,0,0,.1);
+
+    z-index:100;
+}
+
+  </style>
+
 <div class="wpckan_dataset_detail">
 
 	<!-- Title or title_translated in case of multilingual dataset-->
 	<?php
-    $title = wpckan_get_multilingual_value('title',$data);?>
-	<h1 class="wpckan_dataset_title"><?php echo $title ?></h1>
+    $title = wpckan_get_multilingual_value('title',$data);
+    $groups = '';
+    if(isset($data['groups'])){
+      foreach($data['groups'] as $group):
+        $groups.='&nbsp;<img width="32px" height="32px" src="'.$group['image_display_url'].'">&nbsp;';
+      endforeach;
+    }
+  ?>
+	<h1 class="wpckan_dataset_title"><?php echo $title.$groups ?></h1>
 
-	<!-- Organization -->
-  <?php if (isset($data['organization']['title']) && function_exists("odm_country_manager") && (odm_country_manager()->get_current_country()=="mekong")): ?>
-    <h3 class="wpckan_dataset_organization"><?php _e($data['organization']['title'], 'wpckan') ?></h3>
-  <?php endif; ?>
-
-	<!-- Tags -->
-  <ul class="wpckan_dataset_tags">
-    <?php foreach ($data['tags'] as $tag): ?>
-      <li class="wpckan_dataset_tag"><?php echo apply_filters('translate_term', $tag['display_name'], $current_language); ?></li>
-    <?php endforeach; ?>
-  </ul>
-
-	<!-- Notes or notes_translated in case of multilingual dataset -->
-	<?php
+  <!-- Notes or notes_translated in case of multilingual dataset -->
+  <?php
     $notes = wpckan_get_multilingual_value('notes',$data);?>
 	  <p class="wpckan_dataset_notes expandible"><?php echo $notes ?></p>
-
-	<!-- License -->
-  <?php if (isset($data['license_title'])): ?>
-    <a href="<?php echo $data['license_url'] ?>" class="wpckan_dataset_license"><?php echo $data['license_title'] ?></a>
+    <?php
+    if(!isset($dataset["openess_score"])){
+      echo "<div><span>Grado de apertura: </span>";
+      for($i=0; $i<5; $i++){
+        if($i < 3 /*$dataset["openess_score"]*/)
+          echo "<span><image src='/wordpress/wp-content/uploads/2019/02/estrella.png'></span>&nbsp;";
+        else {
+          echo "<span><image src='/wordpress/wp-content/uploads/2019/02/estrellavacia.png'></span>&nbsp;";
+        }
+      }
+      echo "</div>";
+    }?>
+	<!-- Organization -->
+  <?php if (isset($data['organization']['title'])): ?>
+    <div>
+      <span class="wpckan_dataset_organization">Autor: <?php _e($data['organization']['title'], 'wpckan') ?></span>
+    </div>
+  <?php endif; ?>
+  <!-- metadata_created -->
+  <?php if (isset($data['metadata_created'])): ?>
+    <div>
+      <span class="wpckan_dataset_notes">Fecha creación: <?php _e($data['metadata_created'], 'wpckan') ?></span>
+    </div>
+  <?php endif; ?>
+  <!-- metadata_modified -->
+  <?php if (isset($data['metadata_modified'])): ?>
+    <div>
+      <span class="wpckan_dataset_notes">Fecha última modificación: <?php _e($data['metadata_modified'], 'wpckan') ?></span>
+    </div>
   <?php endif; ?>
 
+  <!-- License -->
+  <?php if (isset($data['license_title'])): ?>
+    <span>Licencia: <a href="<?php echo $data['license_url'] ?>" class="wpckan_dataset_license"> <?php echo $data['license_title'] ?></a></span>
+  <?php endif; ?>
+
+  <!-- separator -->
+  <hr style="margin-top: 30px;">
+
+	<!-- Tags -->
+  <h3><?php _e('Etiquetas', 'wpckan') ?></h3>
+  <div class="wrapper">
+    <?php foreach ($data['tags'] as $tag): ?>
+      <a href="/wordpress/group?q=tags:<?php echo $tag['name']?>" class="tag"><?php echo apply_filters('translate_term', $tag['display_name'], $current_language); ?></a>
+    <?php endforeach; ?>
+  </div>
+
+  <!-- separator -->
+  <hr style="margin-top: 30px;">
+
   <!-- Resources -->
-	<h2><?php _e('Resources', 'wpckan') ?></h2>
+	<h3><?php _e('Distribuciones', 'wpckan') ?></h3>
 	<table class="wpckan_dataset_resources">
     <?php foreach ($data['resources'] as $resource): ?>
   		<tr class="wpckan_dataset_resource">
-  			<td class="wpckan_dataset_resource_format" format="<?php echo $resource['format']; ?>"><?php if (isset($resource['format'])): ?>
-          <p format="<?php echo $resource['format']; ?>"><?php echo $resource['format']; ?></p>
-        <?php endif; ?></td>
         <td class="wpckan_dataset_resource_name">
 					<?php
 					$resource_title = $resource['name'];
@@ -66,32 +153,33 @@
 	        endif; ?>
           <p class="expandible"><?php echo ($resource_description !="asdf")? $resource_description: ''; ?></p>
         </td>
+        <td class="wpckan_dataset_resource_format" format="<?php echo $resource['format']; ?>"><?php if (isset($resource['format'])): ?>
+          <p format="<?php echo $resource['format']; ?>"><?php echo $resource['format']; ?></p>
+        <?php endif; ?></td>
         <td class="wpckan_dataset_resource_url"><?php if (isset($resource['url'])): ?>
-          <a class="wpckan_dataset_resource_url button download" href="<?php echo $resource['url']; ?>" data-ga-event="Dataset|resource_download|<?php echo $dataset_id.'/'.$resource['id']; ?>"><?php _e('Download', 'wpckan') ?></a>
+          <a style="background-color: rgba(251,51,51);" class="wpckan_dataset_resource_url button download" href="<?php echo $resource['url']; ?>" data-ga-event="Dataset|resource_download|<?php echo $dataset_id.'/'.$resource['id']; ?>"><span><i class="fa fa-download"></i></span></a>
         <?php endif; ?></td>
   		</tr>
     <?php endforeach; ?>
   </table>
 
 	<!-- Metadata -->
-	<div class="metadata-heading">
-		<h2 class="metadata-title"><?php _e('Metadata', 'wpckan') ?></h2>
-		<div class="metadata-dropdown">
-			<span><i class="fa fa-download"></i></span>
-			<ul class="dropdown">
-				<li><a target="_blank" href="<?php echo wpckan_get_ckan_domain(); ?>/dataset/<?php echo $dataset_id;?>.xml" data-ga-event="Dataset|metadata_download|<?php echo $dataset_id; ?>/xml"><?php _e('XML', 'odm')?></a></li>
-				<li><a target="_blank" href="<?php echo wpckan_get_ckan_domain(); ?>/api/3/action/package_show?id=<?php echo $dataset_id;?>" data-ga-event="Dataset|metadata_download|<?php echo $dataset_id; ?>/json"><?php _e('JSON', 'odm')?></a></li>
-				<li><a target="_blank" href="<?php echo wpckan_get_ckan_domain(); ?>/dataset/<?php echo $dataset_id;?>.rdf" data-ga-event="Dataset|metadata_download|<?php echo $dataset_id; ?>/rdf"><?php _e('RDF', 'odm')?></a></li>
-			</ul>
-		</div>
-	</div>
+  <div class="row">
+	<h2 class="col-12"><?php _e('Metadata', 'wpckan') ?></h2>
+  <div class="col-12" style="padding-bottom: 10px;">Descargar metadatos:</div>
+</div>
+  <div class="row" style="padding-bottom: 20px;">
+      <div class="col-4">- <a target="_blank" href="<?php echo wpckan_get_ckan_domain(); ?>/dataset/<?php echo $dataset_id;?>.xml" data-ga-event="Dataset|metadata_download|<?php echo $dataset_id; ?>/xml"><?php _e('XML', 'odm')?></a></div>
+      <div class="col-4">- <a target="_blank" href="<?php echo wpckan_get_ckan_domain(); ?>/api/3/action/package_show?id=<?php echo $dataset_id;?>" data-ga-event="Dataset|metadata_download|<?php echo $dataset_id; ?>/json"><?php _e('JSON', 'odm')?></a></div>
+      <div class="col-4">- <a target="_blank" href="<?php echo wpckan_get_ckan_domain(); ?>/dataset/<?php echo $dataset_id;?>.rdf" data-ga-event="Dataset|metadata_download|<?php echo $dataset_id; ?>/rdf"><?php _e('RDF', 'odm')?></a></div>
+  </div>
 
-	<?php
+	<!-- <?php
 		if (!empty($supported_fields)): ?>
 	    <?php
 				echo render_metadata_table($supported_fields,$data); ?>
 	<?php
-		endif; ?>
+endif; ?>
 
 	<?php
     $additional_metadata = render_metadata_table($supported_fields_additional,$data);
@@ -105,7 +193,7 @@
 			</div>
     <br />
 	<?php
-		endif; ?>
+endif; ?> -->
 
 </div>
 

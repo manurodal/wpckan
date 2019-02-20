@@ -29,6 +29,7 @@
 <div class="wpckan_dataset_list">
   <ul>
   <?php foreach ($data as $dataset){ ?>
+  	<?php echo "<script>console.log('Debug Objects: " . json_encode($dataset) . "' );</script>";?>
     <li>
       <div class="wpckan_dataset">
         <?php
@@ -49,7 +50,7 @@
                 endif;
 								if ($should_link_to_dataset): ?>
                   <h5>
-  	                <a <?php if ($target_blank_enabled){ echo 'target="_blank"';} ?>  href="<?php echo wpckan_get_link_to_dataset($dataset["name"]) ?>" data-ga-event="Dataset|link_click|<?php echo $dataset["id"]; ?>">
+  	                <a <?php if ($target_blank_enabled){ echo 'target="_blank"';} ?>  href="wordpress/<?php echo wpckan_get_link_to_dataset($dataset["name"]) ?>" data-ga-event="Dataset|link_click|<?php echo $dataset["id"]; ?>">
   										<?php echo $to_print; ?>
   									</a>
                   </h5>
